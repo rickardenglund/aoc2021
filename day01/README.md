@@ -1,6 +1,6 @@
-# Java with gradle
+# Elm
 
-This project builds the code in a Docker container and then transfers the resulting JAR-file to a new container. 
+This project executes in the elm repl 
 
 ## How to build
 ```bash
