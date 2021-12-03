@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -12,10 +13,15 @@ const (
 )
 
 func main() {
-	fmt.Printf("\npart1:\n")
-	part1()
-	fmt.Printf("\npart2:\n")
-	part2()
+	if os.Getenv("PART") == "part1" {
+		fmt.Printf("\npart1:\n")
+		part1()
+	}
+
+	if os.Getenv("PART") == "part2" {
+		fmt.Printf("\npart2:\n")
+		part2()
+	}
 }
 
 func part1() {
