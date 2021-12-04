@@ -133,7 +133,7 @@ func (b *board) getScore() int {
 }
 
 func parseBoards(lines []string) []board {
-	boards := []board{}
+	var boards []board
 
 	currentRow := 0
 	for currentRow < len(lines) {
@@ -142,7 +142,9 @@ func parseBoards(lines []string) []board {
 		for r := 0; r < 5; r++ {
 			numberStrings := strings.Split(
 				strings.ReplaceAll(
-					strings.TrimSpace(lines[currentRow]), "  ", " "), " ")
+					strings.TrimSpace(lines[currentRow]),
+					"  ", " "),
+				" ")
 
 			for i := range numberStrings {
 				s := numberStrings[i]
@@ -177,8 +179,4 @@ func parseNumbers(line string) []int {
 	}
 
 	return numbers
-}
-
-func part2() {
-
 }
