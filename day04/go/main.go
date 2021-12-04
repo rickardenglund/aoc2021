@@ -68,13 +68,7 @@ func (b *board) play(n int) (bool, int) {
 		}
 	}
 
-	won, p := b.checkRows()
-	if won {
-		b.won = true
-		return won, p * n
-	}
-
-	won, p = b.checkColumns()
+	won, p := b.checkWin()
 	if won {
 		b.won = true
 		return won, p * n
@@ -83,35 +77,25 @@ func (b *board) play(n int) (bool, int) {
 	return false, 0
 }
 
-func (b *board) checkRows() (bool, int) {
+func (b *board) checkWin() (bool, int) {
 	for r := range b.numbers {
-		won := true
+		rowWin := true
+		colWin := true
 		for c := range b.numbers[r] {
 			if !b.marked[r][c] {
-				won = false
+				rowWin = false
+			}
+
+			if !b.marked[c][r] {
+				colWin = false
+			}
+
+			if !rowWin && !colWin {
 				break
 			}
 		}
 
-		if won {
-			return true, b.getScore()
-		}
-	}
-
-	return false, 0
-}
-
-func (b *board) checkColumns() (bool, int) {
-	for c := range b.numbers[0] {
-		won := true
-		for r := range b.numbers {
-			if !b.marked[r][c] {
-				won = false
-				break
-			}
-		}
-
-		if won {
+		if rowWin || colWin {
 			return true, b.getScore()
 		}
 	}
