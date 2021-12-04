@@ -15,16 +15,16 @@ const (
 func main() {
 	if os.Getenv("PART") == "part1" {
 		fmt.Printf("\npart1:\n")
-		part1()
+		play(true)
 	}
 
 	if os.Getenv("PART") == "part2" {
 		fmt.Printf("\npart2:\n")
-		part2()
+		play(false)
 	}
 }
 
-func part1() {
+func play(stopAfterFirstWin bool) {
 	lines := strings.Split(input, "\n")
 	numbers := parseNumbers(lines[0])
 	boards := parseBoards(lines[2:])
@@ -34,17 +34,18 @@ func part1() {
 			won, points := boards[i].play(number)
 			if won {
 				fmt.Printf("board %d won last number: %d, points: %d\n", i, number, points)
-				os.Exit(0)
+				if stopAfterFirstWin {
+					return
+				}
 			}
 		}
 	}
-	fmt.Printf("line: %v\n", numbers)
-	fmt.Printf("boards: %v\n", boards[0])
 }
 
 type board struct {
 	numbers [5][5]int
 	marked  [5][5]bool
+	won     bool
 }
 
 func (b *board) print() {
@@ -55,6 +56,10 @@ func (b *board) print() {
 }
 
 func (b *board) play(n int) (bool, int) {
+	if b.won {
+		return false, 0
+	}
+
 	for r := range b.numbers {
 		for c := range b.numbers[r] {
 			if b.numbers[r][c] == n {
@@ -65,11 +70,13 @@ func (b *board) play(n int) (bool, int) {
 
 	won, p := b.checkRows()
 	if won {
+		b.won = true
 		return won, p * n
 	}
 
 	won, p = b.checkColumns()
 	if won {
+		b.won = true
 		return won, p * n
 	}
 
@@ -150,7 +157,6 @@ func parseBoards(lines []string) []board {
 			currentRow++
 		}
 
-		b.print()
 		boards = append(boards, b)
 		currentRow++
 	}
