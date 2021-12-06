@@ -16,23 +16,31 @@ func main() {
 	}
 
 	if os.Getenv("PART") == "part2" {
-		fmt.Printf("\npart2: %s\n", run(test, 256))
+		fmt.Printf("\npart2: %s\n", run(input, 256))
 	}
 }
 
-func run(fishes []int, nRounds int) string {
-	for r := 0; r < nRounds; r++ {
-		nFishes := len(fishes)
-		fmt.Printf("day: %d: %d\n", r, nFishes)
-		for i := 0; i < nFishes; i++ {
-			if fishes[i] == 0 {
-				fishes[i] = 7
-				fishes = append(fishes, 8)
-			}
-
-			fishes[i]--
-		}
+func run(startFishes []int, nRounds int) string {
+	f := map[int]int{}
+	for _, timer := range startFishes {
+		f[timer]++
 	}
 
-	return fmt.Sprintf("%d", len(fishes))
+	for r := 0; r < nRounds; r++ {
+		newFish := f[0]
+
+		for i := 0; i < 9; i++ {
+			f[i] = f[i+1]
+		}
+
+		f[8] = newFish
+		f[6] += newFish
+	}
+
+	sum := 0
+	for _, n := range f {
+		sum += n
+	}
+
+	return fmt.Sprintf("%d", sum)
 }
