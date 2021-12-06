@@ -19,7 +19,6 @@ func main() {
 
 	if os.Getenv("PART") == "part2" {
 		fmt.Printf("\npart2: %s\n", count(true, input))
-		//play(false)
 	}
 }
 
@@ -27,7 +26,6 @@ func count(diagonals bool, input string) string {
 	pipes := readPipes(diagonals, input)
 	count := 0
 	for _, n := range pipes {
-		//fmt.Printf("%v: %d\n", c, n)
 		if n >= 2 {
 			count++
 		}
