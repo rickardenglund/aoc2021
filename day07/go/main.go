@@ -55,10 +55,12 @@ func fuelCostAdvanced(positions []int, target int) int {
 	cost := 0
 	for _, p := range positions {
 		steps := abs(p - target)
+
 		c := 0
 		for i := 1; i <= steps; i++ {
 			c += i
 		}
+
 		cost += c
 	}
 
