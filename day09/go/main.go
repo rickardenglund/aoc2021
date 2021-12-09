@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -26,10 +27,10 @@ type pos struct {
 	x, y int
 }
 
-func run(input string, advanced bool) string {
+func run(input string, part2 bool) string {
 	heights := map[pos]int{}
-	for x, line := range strings.Split(input, "\n") {
-		for y, heightString := range strings.Split(line, "") {
+	for y, line := range strings.Split(input, "\n") {
+		for x, heightString := range strings.Split(line, "") {
 			h, err := strconv.Atoi(heightString)
 			if err != nil {
 				panic(err)
@@ -39,6 +40,73 @@ func run(input string, advanced bool) string {
 		}
 	}
 
+	lowLocations := getLowLocations(heights)
+
+	if !part2 {
+		risk := 0
+		for _, h := range lowLocations {
+			risk += h + 1
+		}
+
+		return strconv.Itoa(risk)
+	} else {
+		sizes := []int{}
+		basins := []map[pos]bool{}
+		for p := range lowLocations {
+			poss := getBasin(heights, p)
+
+			basins = append(basins, poss)
+			sizes = append(sizes, len(poss))
+		}
+
+		sort.Ints(sizes)
+		l := len(sizes)
+
+		product := sizes[l-1] * sizes[l-2] * sizes[l-3]
+		return fmt.Sprintf("%d\n", product)
+	}
+}
+
+func getBasin(heights map[pos]int, p pos) map[pos]bool {
+	visited := map[pos]bool{}
+	toVisit := map[pos]bool{p: true}
+
+	for _, p := range getSurroundingPoss(heights, p) {
+		toVisit[p] = true
+	}
+
+	for len(toVisit) > 0 {
+		c := pop(toVisit)
+		visited[c] = true
+
+		n := getSurroundingPoss(heights, c)
+		for _, r := range n {
+			if !visited[r] {
+				toVisit[r] = true
+			}
+		}
+	}
+
+	return visited
+}
+
+func pop(visit map[pos]bool) pos {
+	p := getOne(visit)
+	delete(visit, p)
+
+	return p
+}
+
+func getOne(visit map[pos]bool) pos {
+	for p := range visit {
+		return p
+	}
+
+	panic("empty")
+
+}
+
+func getLowLocations(heights map[pos]int) map[pos]int {
 	lowLocation := map[pos]int{}
 	for p, h := range heights {
 		surrHeights := getSurroundingHeights(heights, p)
@@ -51,16 +119,7 @@ func run(input string, advanced bool) string {
 			lowLocation[p] = h
 		}
 	}
-
-	fmt.Printf("ll: %v\n", lowLocation)
-
-	risk := 0
-	for _, h := range lowLocation {
-		risk += h + 1
-	}
-
-	return strconv.Itoa(risk)
-
+	return lowLocation
 }
 
 func getSurroundingHeights(heights map[pos]int, p pos) []int {
@@ -75,6 +134,24 @@ func getSurroundingHeights(heights map[pos]int, p pos) []int {
 		h, ok := heights[p]
 		if ok {
 			surr = append(surr, h)
+		}
+	}
+
+	return surr
+}
+
+func getSurroundingPoss(heights map[pos]int, p pos) []pos {
+	surr := []pos{}
+	poss := []pos{
+		{p.x - 1, p.y},
+		{p.x + 1, p.y},
+		{p.x, p.y - 1},
+		{p.x, p.y + 1},
+	}
+	for _, p := range poss {
+		v, ok := heights[p]
+		if ok && v != 9 {
+			surr = append(surr, p)
 		}
 	}
 
